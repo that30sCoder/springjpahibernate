@@ -1,6 +1,8 @@
 package com.that30sCoder.dao;
 
 import com.that30sCoder.domain.Author;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,9 +10,23 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AuthorDaoImpl implements AuthorDao {
+
+
+    private final EntityManagerFactory emf;
+
+    public AuthorDaoImpl(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
+    private EntityManager getEntityManager(){
+        return emf.createEntityManager();
+        }
+
     @Override
     public Author getById(Long id) {
-        return null;
+
+        return getEntityManager().find(Author.class,id);
+
     }
 
     @Override
