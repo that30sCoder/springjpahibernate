@@ -1,8 +1,10 @@
 package com.that30sCoder.dao;
 
 import com.that30sCoder.domain.Author;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,11 +21,14 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     private EntityManager getEntityManager(){
+
         return emf.createEntityManager();
         }
 
     @Override
     public Author getById(Long id) {
+        EntityManager em = getEntityManager();
+        em.close();
 
         return getEntityManager().find(Author.class,id);
 
@@ -31,21 +36,47 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public Author findAuthorByName(String firstName, String lastName) {
-        return null;
+        EntityManager em = getEntityManager();
+        TypedQuery<Author> query = getEntityManager().createQuery("SELECT a FROM Author a " +
+
+                "WHERE a.firstName = :first_name and a.lastName = :last_name", Author.class);
+            query.setParameter("first_name",firstName);
+            query.setParameter("last_name",lastName);
+        em.close();
+        return query.getSingleResult();
     }
 
     @Override
     public Author saveNewAuthor(Author author) {
-        return null;
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        em.persist(author);
+        em.flush();
+        em.getTransaction().commit();
+        em.close();
+
+        return author;
     }
 
     @Override
     public Author updateAuthor(Author author) {
-        return null;
+        EntityManager em = getEntityManager();
+        em.joinTransaction();
+        em.merge(author);
+        em.flush();
+        em.clear();
+        em.close();
+        return em.find(Author.class,author.getId());
     }
 
     @Override
     public void deleteAuthorById(Long id) {
-
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        Author author = em.find(Author.class,id);
+        em.remove(author);
+        em.flush();
+        em.getTransaction().commit();
+        em.close();
     }
 }
