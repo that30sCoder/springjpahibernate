@@ -1,11 +1,10 @@
 package com.that30sCoder.dao;
 
 import com.that30sCoder.domain.Author;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Created by jt on 8/28/21.
@@ -24,6 +23,20 @@ public class AuthorDaoImpl implements AuthorDao {
 
         return emf.createEntityManager();
         }
+
+    @Override
+    public List<Author> listAuthorByLastNameLike(String lastName) {
+       EntityManager em = getEntityManager();
+       try {
+           Query query = em.createQuery("SELECT a from Author a where a.lastName like :last_name");
+            query.setParameter("last_name",lastName + "%");
+          List<Author> authorList=  query.getResultList();
+
+           return authorList ;
+       } finally {
+           em.close();
+       }
+    }
 
     @Override
     public Author getById(Long id) {
