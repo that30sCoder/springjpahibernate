@@ -73,5 +73,7 @@ public class BookDaoImpl implements BookDao{
 
     public EntityManager getEntityManager(){
         return emf.createEntityManager();
+
+
     }
 }
