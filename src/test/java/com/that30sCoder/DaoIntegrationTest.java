@@ -6,6 +6,7 @@ import com.that30sCoder.dao.BookDaoImpl;
 import com.that30sCoder.domain.Author;
 import com.that30sCoder.dao.AuthorDaoImpl;
 import com.that30sCoder.domain.Book;
+import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -33,7 +34,17 @@ public class DaoIntegrationTest {
     @Autowired
     BookDao bookDao;
 
+    @Test
+    void testFindBookByISBN() {
+        Book book = new Book();
+        book.setIsbn("1234" + RandomString.make());
+        book.setTitle("ISBN TEST");
 
+        Book saved = bookDao.saveNewBook(book);
+
+        Book fetched = bookDao.findByIsbn(book.getIsbn());
+        assertThat(fetched).isNotNull();
+    }
 
     @Test
     void testListAuthorByLastNameLike() {
